@@ -1,0 +1,15 @@
+[Unit]
+Description=OSINT Marketing Tool Flask App (Gunicorn)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/puchadav/GIT/module/osint_marketing_tool
+Environment="FLASK_ENV=production"
+EnvironmentFile=/home/puchadav/GIT/module/osint_marketing_tool/.env
+ExecStart=/usr/local/bin/gunicorn -c gunicorn.conf.py app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

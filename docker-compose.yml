@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: osint_db
+      POSTGRES_USER: osint_user
+      POSTGRES_PASSWORD: osint_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://osint_user:osint_password@db:5432/osint_db
+      FLASK_SECRET: your-very-secret-key
+      # Add other environment variables as needed
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: gunicorn -c gunicorn.conf.py app:app
+    restart: always
+
+volumes:
+  db_data:

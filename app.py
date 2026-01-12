@@ -271,37 +271,33 @@ def api_ai_chat():
     return jsonify({'reply': reply})
 
 
-
 @app.route('/')
 def index():
-    # basic index to navigate to major features
+    return render_template('index.html')
 
-    @app.route('/')
-    def index():
-        return render_template('index.html')
+# --- Production Deployment Entrypoint ---
+def initialize_database():
+    try:
+        with app.app_context():
+            db.create_all()
+    except Exception as e:
+        print("[ERROR] Database initialization failed.")
+        print(e)
+        print("\n---\n")
+        print("Check your DATABASE_URL in the environment or .env file.\n")
+        print("The default is: postgresql://user:password@localhost:5432/osint_db\n")
+        print("If you see 'role \"user\" does not exist', you must create the database user and database, or set DATABASE_URL to valid credentials.")
+        exit(1)
 
-    # ...existing code for compose_email, send_new_email, generate_ai_email, leads_dashboard, etc. should be placed here, but only once, using the single app instance...
+# Only run the database initialization if explicitly called (not on import by WSGI server)
+if os.environ.get('FLASK_ENV', '').lower() != 'production' and __name__ == '__main__':
+    initialize_database()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
 
-
-    if __name__ == '__main__':
-        try:
-            with app.app_context():
-                db.create_all()
-        except Exception as e:
-            print("[ERROR] Database initialization failed.")
-            print(e)
-            print("\n---\n")
-            print("Check your DATABASE_URL in the environment or .env file.\n")
-            print("The default is: postgresql://user:password@localhost:5432/osint_db\n")
-            print("If you see 'role \"user\" does not exist', you must create the database user and database, or set DATABASE_URL to valid credentials.")
-            exit(1)
-        app.run(debug=True)
-
-if __name__ == '__main__':
-
-
-
-    app.run(debug=True)
+# For production: use Gunicorn or another WSGI server
+# Example: gunicorn -w 4 'app:app'
+# To initialize the database in production, run:
+#   python -c 'from app import initialize_database; initialize_database()'
 
 
 
