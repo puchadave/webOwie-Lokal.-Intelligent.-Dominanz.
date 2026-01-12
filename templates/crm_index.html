@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>CRM: Automatische Lead-Generierung</h2>
+<form id="crm-generate-form">
+  <label for="company">Unternehmen:</label><br>
+  <input id="company" name="company" type="text" style="width:100%" value="Beispiel GmbH"><br>
+  <button type="submit">Lead automatisch generieren</button>
+</form>
+<div id="crm-generate-result"></div>
+<h3>Leads</h3>
+<ul>
+  {% for name, lead in leads.items() %}
+    <li><b>{{ name }}</b>: {{ lead.osint_data }}<br>
+      <small>Psychoprofil: {{ lead.psychoprofile }}<br>Strategie: {{ lead.strategie }}</small>
+    </li>
+  {% endfor %}
+</ul>
+<script>
+document.getElementById('crm-generate-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const company = document.getElementById('company').value;
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Generiere...';
+  const res = await fetch('/crm/generate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({company})
+  });
+  const data = await res.json();
+  btn.disabled = false;
+  btn.textContent = 'Lead automatisch generieren';
+  if(data.lead) {
+    document.getElementById('crm-generate-result').innerHTML = '<h3>Vorschau:</h3>' + data.lead.osint_data + '<br><small>Psychoprofil: ' + data.lead.psychoprofile + '<br>Strategie: ' + data.lead.strategie + '</small>';
+  } else {
+    document.getElementById('crm-generate-result').textContent = 'Fehler: ' + (data.error || 'Unbekannt');
+  }
+};
+</script>
+{% endblock %}

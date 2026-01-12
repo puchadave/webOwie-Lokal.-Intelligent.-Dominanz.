@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ post.title }}</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>{{ post.title }}</h1>
+  <p>Published: {{ post.published_at or post.created_at }}</p>
+  <div>
+    {{ post.content | safe }}
+  </div>
+  <p><a href="/blog">Back to blog</a></p>
+</body>
+</html>

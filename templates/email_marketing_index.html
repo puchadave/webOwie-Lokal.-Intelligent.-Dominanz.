@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>E-Mail-Marketing (KI-basiert)</h2>
+<form id="email-marketing-form">
+  <label for="recipient">Empfänger:</label><br>
+  <input id="recipient" name="recipient" type="email" style="width:100%" value="kunde@example.com"><br>
+  <label for="campaign">Kampagne:</label><br>
+  <input id="campaign" name="campaign" type="text" style="width:100%" value="Neue Produktkampagne"><br>
+  <button type="submit">E-Mail automatisch generieren & versenden</button>
+</form>
+<div id="email-marketing-result"></div>
+<h3>Versandte Kampagnen</h3>
+<ul>
+  {% for c in campaigns %}
+    <li><b>{{ c.sent_at }}</b>: <b>{{ c.subject }}</b> an {{ c.recipient }}<br>{{ c.body }}<br><small>Analyse: {{ c.osint_data }}</small></li>
+  {% endfor %}
+</ul>
+<script>
+document.getElementById('email-marketing-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const recipient = document.getElementById('recipient').value;
+  const campaign = document.getElementById('campaign').value;
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Generiere & versende...';
+  const res = await fetch('/email_marketing/generate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({recipient, campaign})
+  });
+  const data = await res.json();
+  btn.disabled = false;
+  btn.textContent = 'E-Mail automatisch generieren & versenden';
+  if(data.campaign) {
+    document.getElementById('email-marketing-result').innerHTML = '<h3>Vorschau:</h3>' + data.campaign.body + '<br><small>Betreff: ' + data.campaign.subject + '<br>Analyse: ' + data.campaign.osint_data + '</small>';
+  } else {
+    document.getElementById('email-marketing-result').textContent = 'Fehler: ' + (data.error || 'Unbekannt');
+  }
+};
+</script>
+{% endblock %}

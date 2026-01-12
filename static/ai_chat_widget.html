@@ -1,0 +1,99 @@
+<!-- Floating Chat Widget HTML -->
+<div id="ai-chat-widget" style="position:fixed;bottom:24px;right:24px;z-index:9999;width:360px;max-width:90vw;box-shadow:0 4px 24px rgba(0,0,0,0.2);border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column;">
+  <div style="background:#222;color:#fff;padding:12px 16px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;">
+    <span>AI Chat</span>
+    <button id="ai-chat-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">×</button>
+  </div>
+  <div id="ai-chat-messages" style="flex:1;overflow-y:auto;padding:12px;background:#f9f9f9;min-height:120px;"></div>
+  <form id="ai-chat-form" style="display:flex;gap:8px;padding:12px;background:#fafafa;align-items:center;">
+    <input id="ai-chat-input" type="text" placeholder="Nachricht eingeben..." style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid #ccc;" autocomplete="off" />
+    <input id="ai-chat-file" type="file" style="display:none;" />
+    <button type="button" id="ai-chat-upload" title="Datei anhängen" style="background:none;border:none;font-size:18px;cursor:pointer;">📎</button>
+    <button type="button" id="ai-chat-mic" title="Spracheingabe" style="background:none;border:none;font-size:18px;cursor:pointer;">🎤</button>
+    <button type="submit" style="background:#222;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">Senden</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  // Floating logic
+  const widget = document.getElementById('ai-chat-widget');
+  const closeBtn = document.getElementById('ai-chat-close');
+  closeBtn.onclick = () => widget.style.display = 'none';
+
+  // File upload
+  const fileInput = document.getElementById('ai-chat-file');
+  document.getElementById('ai-chat-upload').onclick = () => fileInput.click();
+  fileInput.onchange = () => {
+    if(fileInput.files.length) {
+      const file = fileInput.files[0];
+      appendMessage('user', `📎 Datei ausgewählt: ${file.name}`);
+      // TODO: Upload-Logik an Backend
+    }
+  };
+
+  // Speech-to-Text
+  const micBtn = document.getElementById('ai-chat-mic');
+  let recognition;
+  if(window.SpeechRecognition || window.webkitSpeechRecognition) {
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'de-DE';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    micBtn.onclick = () => {
+      recognition.start();
+      micBtn.disabled = true;
+    };
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      document.getElementById('ai-chat-input').value = text;
+      micBtn.disabled = false;
+    };
+    recognition.onerror = () => { micBtn.disabled = false; };
+  } else {
+    micBtn.style.display = 'none';
+  }
+
+  // TTS
+  function speak(text) {
+    if(window.speechSynthesis) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'de-DE';
+      window.speechSynthesis.speak(utter);
+    }
+  }
+
+  // Chat logic
+  const form = document.getElementById('ai-chat-form');
+  const input = document.getElementById('ai-chat-input');
+  const messages = document.getElementById('ai-chat-messages');
+  function appendMessage(sender, text) {
+    const div = document.createElement('div');
+    div.style.margin = '8px 0';
+    div.style.textAlign = sender === 'user' ? 'right' : 'left';
+    div.innerHTML = `<span style="display:inline-block;padding:8px 12px;border-radius:12px;max-width:80%;background:${sender==='user'?'#d1e7dd':'#eee'};">${text}</span>`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    if(sender === 'ai') speak(text);
+  }
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if(!text) return;
+    appendMessage('user', text);
+    input.value = '';
+    // Sende an Backend (z.B. /api/ai_chat)
+    try {
+      const res = await fetch('/api/ai_chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text})
+      });
+      const data = await res.json();
+      appendMessage('ai', data.reply || '[Keine Antwort]');
+    } catch {
+      appendMessage('ai', '[Fehler beim Senden]');
+    }
+  };
+})();
+</script>

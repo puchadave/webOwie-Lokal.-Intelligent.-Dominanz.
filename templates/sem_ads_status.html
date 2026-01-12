@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Provider Status - {{ provider }}</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>{{ provider }} - Token Status</h1>
+  <pre>
+{{ token | tojson(indent=2) }}
+  </pre>
+  <p>
+    <a href="/sem/ads/connect?provider={{ provider }}">Re-authenticate</a>
+    &nbsp;|&nbsp;
+    <a href="/sem">Back</a>
+  </p>
+</body>
+  <h1>Provider status: {{ provider }}</h1>
+  <table>
+    {% if token.get('token_age') %}
+      <tr><th>Token age</th><td>{{ token.get('token_age') }}</td></tr>
+    {% endif %}
+    {% for k, v in token.items() %}
+      <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+    {% endfor %}
+  </table>
+  <form method="post" action="/sem/ads/refresh" style="display:inline">
+    <input type="hidden" name="provider" value="{{ provider }}">
+    <button type="submit">Refresh token</button>
+  </form>
+  <p><a href="/sem/config">Back</a></p>
+</body>

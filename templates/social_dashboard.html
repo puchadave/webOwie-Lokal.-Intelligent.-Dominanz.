@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+{% block content %}
+<h2>Social Media Manager Dashboard</h2>
+<div id="social-metrics">
+  <h3>Social KPIs</h3>
+  <div class="row">
+    <div class="col"><h4>Posts</h4><span id="post-count">...</span></div>
+    <div class="col"><h4>Followers</h4><span id="follower-count">...</span></div>
+    <div class="col"><h4>Engagement</h4><span id="engagement">...</span></div>
+  </div>
+  <canvas id="socialChart" width="800" height="300"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function fetchSocialMetrics() {
+  fetch('/api/social_dashboard_metrics').then(r => r.json()).then(data => {
+    document.getElementById('post-count').textContent = data.posts;
+    document.getElementById('follower-count').textContent = data.followers;
+    document.getElementById('engagement').textContent = data.engagement;
+    renderChart(data.chart_labels, data.chart_values);
+  });
+}
+function renderChart(labels, values) {
+  new Chart(document.getElementById('socialChart'), {
+    type: 'line',
+    data: { labels: labels, datasets: [{ label: 'Engagement', data: values }] },
+    options: { responsive: true }
+  });
+}
+fetchSocialMetrics();
+setInterval(fetchSocialMetrics, 10000);
+</script>
+{% endblock %}

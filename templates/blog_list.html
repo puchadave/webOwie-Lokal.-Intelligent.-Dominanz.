@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blog</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>Blog</h1>
+  <ul>
+    {% for p in posts %}
+      <li><a href="/blog/{{ p.slug }}">{{ p.title }}</a> - {{ p.published_at or p.created_at }}</li>
+    {% else %}
+      <li>No posts yet</li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">Back</a></p>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SEA</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>SEA Management</h1>
+  <form id="sea-form" method="post" action="/sem/sea">
+    <label>Provider:
+      <select name="provider">
+        <option value="google_ads">Google Ads</option>
+        <option value="facebook_ads">Facebook Ads</option>
+        <option value="instagram_ads">Instagram</option>
+        <option value="linkedin">LinkedIn</option>
+      </select>
+    </label>
+    <label>Action:
+      <select name="action">
+        <option value="create_campaign">Create Campaign</option>
+        <option value="update_campaign">Update Campaign</option>
+        <option value="pause_campaign">Pause Campaign</option>
+      </select>
+    </label>
+    <label>Payload (JSON):<br>
+      <textarea name="payload" rows="6" cols="60">{}</textarea>
+    </label>
+    <div>
+      <button type="submit">Perform</button>
+    </div>
+  </form>
+  <p><a href="/sem">Back</a></p>
+</body>
+</html>

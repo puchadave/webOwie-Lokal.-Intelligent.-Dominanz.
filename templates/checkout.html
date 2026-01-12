@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>Checkout</h1>
+  <p>Product: {{ product.name }}</p>
+  <p>Price: {{ "%.2f"|format(product.price) }} EUR</p>
+  <form method="post">
+    <button type="submit">Pay now (mock)</button>
+  </form>
+  <p><a href="/ecommerce/{{ product.id }}">Back</a></p>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Client Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; }
+        .sidebar { width: 200px; background-color: #f4f4f4; padding: 20px; border-right: 1px solid #ddd; height: 100vh; box-sizing: border-box; }
+        .sidebar a { display: block; padding: 10px 0; text-decoration: none; color: #333; }
+        .sidebar a:hover { background-color: #ddd; }
+        .main-content { flex-grow: 1; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .branding { display: flex; align-items: center; margin-bottom: 12px; }
+        .site-logo { height: 48px; }
+        .email-list { border: 1px solid #ccc; border-radius: 8px; }
+        .email-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .email-item:last-child { border-bottom: none; }
+        .email-item:hover { background-color: #f9f9f9; }
+        .email-item strong { display: block; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="branding">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="Logo" class="site-logo">
+        </div>
+        <h2>Mailbox</h2>
+        <a href="#">Inbox (0)</a>
+        <a href="#">Sent (0)</a>
+        <a href="#">Drafts (0)</a>
+        <a href="#">Trash (0)</a>
+        <hr>
+        <h2>Actions</h2>
+        <a href="{{ url_for('compose_email') }}">Compose Email</a>
+        <a href="{{ url_for('leads_dashboard') }}">Manage Leads</a>
+        <a href="{{ url_for('configure_email') }}">Settings</a>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Inbox</h1>
+            <button onclick="fetchEmails()">Refresh</button>
+        </div>
+        <div class="email-list">
+            <div class="email-item">
+                <strong>Sender Name</strong>
+                <span>Subject of the Email</span>
+            </div>
+            <!-- More email items will be loaded here -->
+            <div style="text-align: center; padding: 20px;">No emails found.</div>
+        </div>
+    </div>
+
+    <script>
+        function fetchEmails() {
+            alert('Fetching emails... (Not yet implemented)');
+            // In a real application, this would make an AJAX call to a Flask route
+            // that fetches emails via IMAP and updates the email list.
+        }
+    </script>
+</body>
+</html>

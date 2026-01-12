@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leads</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; }
+        .sidebar { width: 200px; background-color: #f4f4f4; padding: 20px; border-right: 1px solid #ddd; height: 100vh; box-sizing: border-box; }
+        .branding { display: flex; align-items: center; margin-bottom: 12px; }
+        .site-logo { height: 48px; }
+        .sidebar a { display: block; padding: 10px 0; text-decoration: none; color: #333; }
+        .sidebar a:hover { background-color: #ddd; }
+        .main-content { flex-grow: 1; padding: 20px; }
+        .lead-card { border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; padding: 15px; }
+        .lead-card h2 { margin-top: 0; }
+        .lead-card pre { background-color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="branding">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="Logo" class="site-logo">
+        </div>
+        <h2>Navigation</h2>
+        <a href="{{ url_for('index') }}">Inbox</a>
+        <a href="{{ url_for('compose_email') }}">Compose Email</a>
+        <a href="{{ url_for('leads_dashboard') }}">Manage Leads</a>
+        <a href="{{ url_for('configure_email') }}">Settings</a>
+    </div>
+    <div class="main-content">
+        <h1>Manage Leads</h1>
+        {% if leads %}
+            {% for company_name, lead_data in leads.items() %}
+                <div class="lead-card">
+                    <h2>{{ company_name }}</h2>
+                    <h3>OSINT Data:</h3>
+                    <pre>{{ lead_data.osint_data | tojson(indent=2) }}</pre>
+                    <h3>Psychoprofile (Placeholder):</h3>
+                    <pre>{{ lead_data.psychoprofile | tojson(indent=2) }}</pre>
+                    <h3>Email Interactions (Placeholder):</h3>
+                    <pre>{{ lead_data.email_interactions | tojson(indent=2) }}</pre>
+                    <!-- TODO: Add forms to edit psychoprofile or add interactions -->
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No leads found. Run OSINT collection from main.py first.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

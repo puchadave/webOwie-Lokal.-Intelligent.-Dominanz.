@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoices</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+  <style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}</style>
+</head>
+<body>
+  <h1>Invoices</h1>
+  <p><a href="/">Back to home</a></p>
+  <table>
+    <thead><tr><th>ID</th><th>Seller</th><th>Buyer</th><th>Issue Date</th><th>Due Date</th><th>Total</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for inv in invoices %}
+      <tr>
+        <td>{{ inv.id }}</td>
+        <td>{{ inv.seller }}</td>
+        <td>{{ inv.buyer }}</td>
+        <td>{{ inv.issue_date }}</td>
+        <td>{{ inv.due_date }}</td>
+        <td>{{ inv.total }}</td>
+        <td><a href="/accounting/{{ inv.id }}">View</a> | <a href="/accounting/{{ inv.id }}/einvoice">eInvoice (XML)</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">No invoices</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

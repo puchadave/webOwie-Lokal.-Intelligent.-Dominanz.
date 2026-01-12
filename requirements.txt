@@ -1,0 +1,17 @@
+# For making HTTP requests to APIs or websites
+requests
+
+# For parsing HTML content (if scraping is needed)
+beautifulsoup4
+
+Flask
+
+# Accounting / DMS and connectors
+Flask-SQLAlchemy
+lxml
+requests
+python-dotenv
+pytesseract
+Pillow
+xmlschema
+cryptography

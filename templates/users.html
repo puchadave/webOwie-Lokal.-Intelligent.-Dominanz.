@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Users</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>Users</h1>
+  <ul>
+    {% for u in users %}
+      <li>
+        {{ u.username }} ({{ u.email or 'no email' }}) - role: {{ u.role }}
+        {% if session.get('user_role') == 'admin' %}
+        <form method="post" action="/auth/user/{{ u.id }}/role" style="display:inline;margin-left:8px">
+          <select name="role">
+            <option value="user" {% if u.role=='user' %}selected{% endif %}>user</option>
+            <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
+          </select>
+          <button type="submit">Change</button>
+        </form>
+        {% endif %}
+
+        {% if session.get('user_role') == 'admin' %}
+        <form method="post" action="/auth/user/{{ u.id }}/permissions" style="display:inline;margin-left:8px">
+          <select name="perm">
+            {% if all_perms %}
+              {% for p in all_perms %}
+                <option value="{{ p.name }}">{{ p.name }}</option>
+              {% endfor %}
+            {% else %}
+              <option value="use_ai">use_ai</option>
+              <option value="run_automation">run_automation</option>
+              <option value="manage_products">manage_products</option>
+            {% endif %}
+          </select>
+          <button type="submit">Grant</button>
+        </form>
+
+        {# Show existing permissions with revoke buttons #}
+        {% set perms = perm_map.get(u.id, []) %}
+        {% if perms %}
+          <span style="margin-left:12px">Permissions:
+            {% for p in perms %}
+              <form method="post" action="/auth/user/{{ u.id }}/permissions/revoke" style="display:inline;margin-left:6px">
+                <input type="hidden" name="perm" value="{{ p }}">
+                <button type="submit">Revoke {{ p }}</button>
+              </form>
+            {% endfor %}
+          </span>
+        {% endif %}
+        {% endif %}
+      </li>
+    {% else %}
+      <li>No users</li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">Back</a></p>
+</body>
+</html>

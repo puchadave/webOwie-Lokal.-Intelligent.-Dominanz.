@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Social Media Management</h2>
+<form id="social-generate-form">
+  <label for="topic">Thema/Kampagne:</label><br>
+  <input id="topic" name="topic" type="text" style="width:100%" value="Neue Produktvorstellung"><br>
+  <button type="submit">Post automatisch generieren</button>
+</form>
+<div id="social-generate-result"></div>
+<h3>Geplante und vergangene Posts</h3>
+<ul>
+  {% for post in posts %}
+    <li><b>{{ post.scheduled }}</b>: {{ post.text }} <br><small>Analyse: {{ post.osint_data }}</small></li>
+  {% endfor %}
+</ul>
+<script>
+document.getElementById('social-generate-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const topic = document.getElementById('topic').value;
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Generiere...';
+  const res = await fetch('/social/generate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({topic})
+  });
+  const data = await res.json();
+  btn.disabled = false;
+  btn.textContent = 'Post automatisch generieren';
+  if(data.post) {
+    document.getElementById('social-generate-result').innerHTML = '<h3>Vorschau:</h3>' + data.post.text + '<br><small>Geplanter Zeitpunkt: ' + data.post.scheduled + '</small>';
+  } else {
+    document.getElementById('social-generate-result').textContent = 'Fehler: ' + (data.error || 'Unbekannt');
+  }
+};
+</script>
+{% endblock %}

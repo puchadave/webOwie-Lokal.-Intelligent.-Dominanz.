@@ -1,0 +1,47 @@
+{% extends "index.html" %}
+{% block content %}
+<h2>System Dashboard</h2>
+<div id="dashboard-metrics">
+  <h3>KPIs & Analytics</h3>
+  <div class="row">
+    <div class="col">
+      <h4>Tenants</h4>
+      <span id="tenant-count">...</span>
+    </div>
+    <div class="col">
+      <h4>Users</h4>
+      <span id="user-count">...</span>
+    </div>
+    <div class="col">
+      <h4>Invoices</h4>
+      <span id="invoice-count">...</span>
+    </div>
+    <div class="col">
+      <h4>Leads</h4>
+      <span id="lead-count">...</span>
+    </div>
+  </div>
+  <canvas id="kpiChart" width="800" height="300"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function fetchMetrics() {
+  fetch('/api/dashboard_metrics').then(r => r.json()).then(data => {
+    document.getElementById('tenant-count').textContent = data.tenants;
+    document.getElementById('user-count').textContent = data.users;
+    document.getElementById('invoice-count').textContent = data.invoices;
+    document.getElementById('lead-count').textContent = data.leads;
+    renderChart(data.chart_labels, data.chart_values);
+  });
+}
+function renderChart(labels, values) {
+  new Chart(document.getElementById('kpiChart'), {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ label: 'KPIs', data: values }] },
+    options: { responsive: true }
+  });
+}
+fetchMetrics();
+setInterval(fetchMetrics, 10000); // Refresh every 10s
+</script>
+{% endblock %}

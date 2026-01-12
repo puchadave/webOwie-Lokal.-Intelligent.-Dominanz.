@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+{% block content %}
+<h2>OSINT Market Analysis Dashboard</h2>
+<div id="osint-metrics">
+  <h3>Trends & Insights</h3>
+  <div class="row">
+    <div class="col"><h4>Trending Topics</h4><span id="trending">...</span></div>
+    <div class="col"><h4>Mentions</h4><span id="mentions">...</span></div>
+    <div class="col"><h4>Sentiment</h4><span id="sentiment">...</span></div>
+  </div>
+  <canvas id="osintChart" width="800" height="300"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function fetchOSINTMetrics() {
+  fetch('/api/osint_dashboard_metrics').then(r => r.json()).then(data => {
+    document.getElementById('trending').textContent = data.trending;
+    document.getElementById('mentions').textContent = data.mentions;
+    document.getElementById('sentiment').textContent = data.sentiment;
+    renderChart(data.chart_labels, data.chart_values);
+  });
+}
+function renderChart(labels, values) {
+  new Chart(document.getElementById('osintChart'), {
+    type: 'line',
+    data: { labels: labels, datasets: [{ label: 'Trends', data: values }] },
+    options: { responsive: true }
+  });
+}
+fetchOSINTMetrics();
+setInterval(fetchOSINTMetrics, 10000);
+</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SEM Config</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>SEM Configuration</h1>
+  <p>Configure connectors and crawling options here (placeholders).</p>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for m in messages %}
+          <li>{{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <h2>Ad Connectors</h2>
+  <table>
+    <tr><th>Provider</th><th>Status</th><th>Action</th></tr>
+    <tr>
+      <td>Google Ads</td>
+      {% set g = connected.get('google_ads') %}
+      <td>{{ 'Connected' if g and g['connected'] else 'Not connected' }}</td>
+      <td>
+        {% if g and g['connected'] %}
+          <a href="/sem/ads/status/google_ads">Status</a>
+          {% if g['token_age'] %}
+            <small> ({{ g['token_age'] }})</small>
+          {% elif g['token_mtime'] %}
+            <small> (mtime: {{ g['token_mtime'] }})</small>
+          {% endif %}
+          <form method="post" action="/sem/ads/disconnect" style="display:inline">
+            <input type="hidden" name="provider" value="google_ads">
+            <button type="submit">Disconnect</button>
+          </form>
+        {% else %}
+          <a href="/sem/ads/connect?provider=google_ads">Connect</a>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>Facebook Ads</td>
+      {% set f = connected.get('facebook_ads') %}
+      <td>{{ 'Connected' if f and f['connected'] else 'Not connected' }}</td>
+      <td>
+        {% if f and f['connected'] %}
+          <a href="/sem/ads/status/facebook_ads">Status</a>
+          {% if f['token_age'] %}
+            <small> ({{ f['token_age'] }})</small>
+          {% elif f['token_mtime'] %}
+            <small> (mtime: {{ f['token_mtime'] }})</small>
+          {% endif %}
+          <form method="post" action="/sem/ads/disconnect" style="display:inline">
+            <input type="hidden" name="provider" value="facebook_ads">
+            <button type="submit">Disconnect</button>
+          </form>
+        {% else %}
+          <a href="/sem/ads/connect?provider=facebook_ads">Connect</a>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>Instagram</td>
+      {% set ig = connected.get('instagram_ads') %}
+      <td>{{ 'Connected' if ig and ig['connected'] else 'Not connected' }}</td>
+      <td>
+        {% if ig and ig['connected'] %}
+          <a href="/sem/ads/status/instagram_ads">Status</a>
+          {% if ig['token_age'] %}
+            <small> ({{ ig['token_age'] }})</small>
+          {% elif ig['token_mtime'] %}
+            <small> (mtime: {{ ig['token_mtime'] }})</small>
+          {% endif %}
+          <form method="post" action="/sem/ads/disconnect" style="display:inline">
+            <input type="hidden" name="provider" value="instagram_ads">
+            <button type="submit">Disconnect</button>
+          </form>
+        {% else %}
+          <a href="/sem/ads/connect?provider=instagram_ads">Connect</a>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>LinkedIn</td>
+      {% set ln = connected.get('linkedin') %}
+      <td>{{ 'Connected' if ln and ln['connected'] else 'Not connected' }}</td>
+      <td>
+        {% if ln and ln['connected'] %}
+          <a href="/sem/ads/status/linkedin">Status</a>
+          {% if ln['token_age'] %}
+            <small> ({{ ln['token_age'] }})</small>
+          {% elif ln['token_mtime'] %}
+            <small> (mtime: {{ ln['token_mtime'] }})</small>
+          {% endif %}
+          <form method="post" action="/sem/ads/disconnect" style="display:inline">
+            <input type="hidden" name="provider" value="linkedin">
+            <button type="submit">Disconnect</button>
+          </form>
+        {% else %}
+          <a href="/sem/ads/connect?provider=linkedin">Connect</a>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+  <form method="post" action="/sem/config">
+    <div>
+      <label>Google Ads Client ID: <input type="text" name="google_client_id"></label>
+    </div>
+    <div>
+      <label>Facebook App ID: <input type="text" name="facebook_app_id"></label>
+    </div>
+    <div>
+      <button type="submit">Save</button>
+    </div>
+  </form>
+  <p><a href="/sem">Back</a></p>
+</body>
+</html>

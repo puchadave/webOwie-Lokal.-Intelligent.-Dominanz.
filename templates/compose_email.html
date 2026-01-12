@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compose Email</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .branding { display: flex; align-items: center; margin-bottom: 12px; }
+        .site-logo { height: 48px; }
+        .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="email"], textarea, select {
+            width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd;
+            box-sizing: border-box; /* Ensures padding doesn't expand the element beyond its defined width */
+        }
+        textarea { min-height: 200px; resize: vertical; }
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;}
+        button.ai-button { background-color: #007bff; }
+        button.ai-button:hover { background-color: #0056b3; }
+        button:hover { background-color: #218838; }
+        .button-group { margin-top: 10px; display: flex; align-items: center; }
+        .button-group label { margin-bottom: 0; margin-right: 10px; width: auto; }
+        .button-group select, .button-group input[type="text"] { margin-bottom: 0; margin-right: 10px; flex-grow: 1; }
+        .loading { display: none; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div class="branding">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="Logo" class="site-logo">
+    </div>
+    <div class="container">
+        <h1>Compose New Email</h1>
+        <form action="{{ url_for('send_new_email') }}" method="post">
+            <label for="to_email">To:</label>
+            <input type="email" id="to_email" name="to_email" required>
+
+            <div class="button-group">
+                <label for="lead_select">Generate for Lead:</label>
+                <select id="lead_select" name="lead_select">
+                    <option value="">-- Select Lead --</option>
+                    {% for company in company_names %}
+                    <option value="{{ company }}">{{ company }}</option>
+                    {% endfor %}
+                </select>
+                <label for="ai_prompt">AI Prompt:</label>
+                <input type="text" id="ai_prompt" name="ai_prompt" placeholder="e.g., product features, follow-up">
+                <button type="button" class="ai-button" onclick="generateEmailWithAI()">Generate with AI</button>
+                <span class="loading" id="ai_loading">Generating...</span>
+            </div>
+            
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+
+            <label for="body">Body:</label>
+            <textarea id="body" name="body" required></textarea>
+
+            <div class="button-group">
+                <button type="submit">Send Email</button>
+                <button type="button" onclick="window.history.back()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function generateEmailWithAI() {
+            const leadSelect = document.getElementById('lead_select');
+            const aiPrompt = document.getElementById('ai_prompt');
+            const subjectField = document.getElementById('subject');
+            const bodyField = document.getElementById('body');
+            const aiLoading = document.getElementById('ai_loading');
+
+            const companyName = leadSelect.value;
+            const prompt = aiPrompt.value;
+
+            if (!companyName) {
+                alert('Please select a lead to generate email content for.');
+                return;
+            }
+            if (!prompt) {
+                alert('Please enter a prompt for AI email generation.');
+                return;
+            }
+
+            aiLoading.style.display = 'inline';
+
+            try {
+                const response = await fetch('/generate_ai_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ company_name: companyName, prompt: prompt })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    subjectField.value = data.subject;
+                    bodyField.value = data.body;
+                } else {
+                    alert('Error generating email with AI: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('An error occurred while communicating with the AI service.');
+            } finally {
+                aiLoading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

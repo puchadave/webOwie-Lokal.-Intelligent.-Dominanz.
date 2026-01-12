@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice {{ invoice.id }}</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>Invoice #{{ invoice.id }}</h1>
+  <p><strong>Seller:</strong> {{ invoice.seller }}<br>
+  <strong>Buyer:</strong> {{ invoice.buyer }}<br>
+  <strong>Issue:</strong> {{ invoice.issue_date }} &nbsp; <strong>Due:</strong> {{ invoice.due_date }}</p>
+  <h2>Lines</h2>
+  <table>
+    <thead><tr><th>Description</th><th>Quantity</th><th>Unit Price</th><th>Line Total</th></tr></thead>
+    <tbody>
+    {% for l in lines %}
+      <tr>
+        <td>{{ l.description }}</td>
+        <td>{{ l.quantity }}</td>
+        <td>{{ l.unit_price }}</td>
+        <td>{{ "%.2f" | format(l.quantity * l.unit_price) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4">No lines</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p><strong>Total:</strong> {{ invoice.total }}</p>
+  <p><a href="/accounting/">Back to invoices</a></p>
+</body>
+</html>

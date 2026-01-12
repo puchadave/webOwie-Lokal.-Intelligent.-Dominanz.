@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Business-Website CMS</h2>
+<form method="post">
+  <label for="page">Seite wählen:</label>
+  <select name="page" id="page" onchange="this.form.submit()">
+    {% for p in pages %}
+      <option value="{{ p[:-5] }}" {% if p[:-5]==page %}selected{% endif %}>{{ p }}</option>
+    {% endfor %}
+  </select>
+</form>
+<form method="post">
+  <input type="hidden" name="page" value="{{ page }}">
+  <label for="content">Inhalt (HTML):</label><br>
+  <textarea name="content" id="content" rows="16" style="width:100%">{{ content }}</textarea><br>
+  <button type="submit">Seite speichern</button>
+</form>
+<p><a href="/business_site/">Zurück zur Website</a></p>
+{% endblock %}

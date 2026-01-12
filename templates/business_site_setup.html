@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Business-Website Setup</h2>
+<p>Du hast noch keine Website generiert. Du kannst die Website automatisch von der KI erstellen lassen oder das CMS nutzen.</p>
+<form id="ai-generate-form">
+  <label for="prompt">Prompt für die KI:</label><br>
+  <textarea id="prompt" name="prompt" rows="3" style="width:100%">Erstelle eine moderne Business-Website für ein Unternehmen.</textarea><br>
+  <button type="submit">Website automatisch generieren</button>
+</form>
+<p>Oder <a href="{{ url_for('business_site.business_site_cms') }}">CMS öffnen</a> um Seiten manuell zu bearbeiten.</p>
+<div id="ai-generate-result"></div>
+<script>
+document.getElementById('ai-generate-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const prompt = document.getElementById('prompt').value;
+  const btn = this.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Generiere...';
+  const res = await fetch('{{ url_for('business_site.business_site_generate') }}', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt})
+  });
+  const data = await res.json();
+  btn.disabled = false;
+  btn.textContent = 'Website automatisch generieren';
+  if(data.html) {
+    document.getElementById('ai-generate-result').innerHTML = '<h3>Vorschau:</h3>' + data.html;
+  } else {
+    document.getElementById('ai-generate-result').textContent = 'Fehler: ' + (data.error || 'Unbekannt');
+  }
+};
+</script>
+{% endblock %}

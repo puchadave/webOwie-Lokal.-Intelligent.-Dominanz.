@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Documents</title>
+  <link rel="stylesheet" href="/static/dummy.css">
+</head>
+<body>
+  <h1>Documents</h1>
+  <form method="post" action="/documents/upload" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <button type="submit">Upload</button>
+  </form>
+  <h2>Uploaded</h2>
+  <ul>
+    {% for d in documents %}
+      <li>{{ d.filename }} - <a href="/documents/download/{{ d.id }}">Download</a></li>
+    {% else %}
+      <li>No documents uploaded</li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">Back to home</a></p>
+</body>
+</html>

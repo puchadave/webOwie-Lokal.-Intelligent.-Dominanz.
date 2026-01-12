@@ -1,0 +1,17 @@
+{
+  "testclient": {
+    "name": "Test Client",
+    "slug": "testclient",
+    "storage": "storage/tenants/testclient"
+  },
+  "autoadmin": {
+    "name": "AutoAdmin Client",
+    "slug": "autoadmin",
+    "storage": "storage/tenants/autoadmin"
+  },
+  "autoadmin2": {
+    "name": "AutoAdmin Client 2",
+    "slug": "autoadmin2",
+    "storage": "storage/tenants/autoadmin2"
+  }
+}
