@@ -15,4 +15,4 @@ pytesseract
 Pillow
 xmlschema
 cryptography
-psycopg2
+psycopg2-binary
