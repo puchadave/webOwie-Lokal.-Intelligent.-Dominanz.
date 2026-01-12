@@ -38,6 +38,11 @@ fi
 info "Installing Python dependencies..."
 pip install -r requirements.txt || error "pip install failed."
 
+# Install AI plugin dependencies (Gemini, OpenAI, Ollama)
+pip install google-generativeai openai requests
+# For Ollama local API integration (if needed)
+pip install ollama
+
 # Database setup
 DB_USER=$(input "Enter PostgreSQL username:" "osintuser")
 DB_PASS=$(input "Enter PostgreSQL password:" "osintpass")
