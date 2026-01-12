@@ -1,3 +1,5 @@
+<a href="https://puchalla.pro"><img width="1024" height="1024" alt="puchalla.pro | Systeme. Strategien. Kontrolle." src="https://github.com/user-attachments/assets/3da3e852-6b54-4688-8324-c6b5e12505ab" /></a>
+
 # OSINT Marketing Tool
 
 ## Installation
@@ -39,6 +41,7 @@
    python app.py
    # Or use the VS Code task: Start Flask Debug Server
    ```
+
 
 
 ## Usage
