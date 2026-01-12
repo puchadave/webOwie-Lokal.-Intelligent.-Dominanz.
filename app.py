@@ -1,25 +1,17 @@
-# Cybersecurity Dashboard
-@app.route('/dashboard/cyber')
-def cyber_dashboard():
-    return render_template('cyber_dashboard.html')
+# --- Flask App Initialization (must be first) ---
+from flask import Flask, render_template, session, request, jsonify, redirect, url_for
+import os
+import json
+from functools import wraps
+import imaplib
+import smtplib
+from email.mime.text import MIMEText
+from email.header import decode_header
+import email
 
-@app.route('/api/cyber_dashboard_metrics')
-def cyber_dashboard_metrics():
-    # Simulate live cybersecurity metrics (replace with real data sources as needed)
-    import random
-    threats = random.randint(0, 10)
-    incidents = random.randint(0, 5)
-    patches = random.randint(10, 50)
-    vulns = random.randint(0, 8)
-    data = {
-        'threats': threats,
-        'incidents': incidents,
-        'patches': patches,
-        'vulnerabilities': vulns,
-        'chart_labels': ['Threats', 'Incidents', 'Patches', 'Vulnerabilities'],
-        'chart_values': [threats, incidents, patches, vulns]
-    }
-    return jsonify(data)
+# Create app
+app = Flask(__name__)
+app.secret_key = os.environ.get('FLASK_SECRET') or os.urandom(24)
 # --- Specialized Dashboards ---
 from flask import render_template
 
@@ -517,8 +509,7 @@ def generate_ai_email():
     if not lead_data:
         return jsonify({"error": f"Lead for {company_name} not found"}), 404
 
-    generated_content = generate_email_content(lead_data, prompt)
-    return jsonify(generated_content)
+
 
 
 @app.route('/leads_dashboard')
@@ -532,11 +523,6 @@ def leads_dashboard():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    generated_content = generate_email_content(lead_data, prompt)
-
-
-
-    return jsonify(generated_content)
 
 
 
