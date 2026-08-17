@@ -4,6 +4,8 @@ set -euo pipefail
 TARGET="${1:-$HOME/odysseus}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PATCH_SHA256="3cbfbad9760d64662c837fe6bad67b79f3261d9ed296c41eb218a73e5f48b129"
+MODEL_SELECTION_PATCH="$ROOT/patches/director-model-selection.patch"
+MODEL_SELECTION_PATCH_SHA256="fb9abf3209716e3004d906b224edfa65d0c0f2d9b5934c13e3e59f6c9348e015"
 
 [[ -d "$TARGET" ]] || { echo "ERROR: target directory does not exist: $TARGET" >&2; exit 1; }
 command -v git >/dev/null || { echo "ERROR: git is required" >&2; exit 1; }
@@ -11,6 +13,7 @@ command -v base64 >/dev/null || { echo "ERROR: base64 is required" >&2; exit 1; 
 command -v gzip >/dev/null || { echo "ERROR: gzip is required" >&2; exit 1; }
 command -v sha256sum >/dev/null || { echo "ERROR: sha256sum is required" >&2; exit 1; }
 command -v tar >/dev/null || { echo "ERROR: tar is required" >&2; exit 1; }
+[[ -f "$MODEL_SELECTION_PATCH" ]] || { echo "ERROR: missing model selection patch" >&2; exit 1; }
 
 PATCH_TMP="$(mktemp)"
 PAYLOAD_TMP="$(mktemp)"
@@ -25,6 +28,13 @@ ACTUAL="$(sha256sum "$PATCH_TMP" | awk '{print $1}')"
   echo "ERROR: reconstructed patch checksum mismatch" >&2
   echo "Expected: $PATCH_SHA256" >&2
   echo "Actual:   $ACTUAL" >&2
+  exit 1
+}
+MODEL_SELECTION_ACTUAL="$(sha256sum "$MODEL_SELECTION_PATCH" | awk '{print $1}')"
+[[ "$MODEL_SELECTION_PATCH_SHA256" == "$MODEL_SELECTION_ACTUAL" ]] || {
+  echo "ERROR: director model-selection patch checksum mismatch" >&2
+  echo "Expected: $MODEL_SELECTION_PATCH_SHA256" >&2
+  echo "Actual:   $MODEL_SELECTION_ACTUAL" >&2
   exit 1
 }
 
@@ -48,10 +58,22 @@ if git apply --check "$PATCH_TMP"; then
 elif git apply --reverse --check "$PATCH_TMP"; then
   echo "Feature patch is already present; leaving source patch state unchanged."
 else
-  echo "ERROR: patch does not apply cleanly to this checkout." >&2
+  echo "ERROR: base feature patch does not apply cleanly to this checkout." >&2
   echo "No patch changes were applied. Review local modifications or restore from:" >&2
   echo "  $BACKUP" >&2
   exit 2
+fi
+
+if git apply --check "$MODEL_SELECTION_PATCH"; then
+  git apply "$MODEL_SELECTION_PATCH"
+  echo "Applied Intelligence Director model-selection update."
+elif git apply --reverse --check "$MODEL_SELECTION_PATCH"; then
+  echo "Intelligence Director model-selection update is already present."
+else
+  echo "ERROR: director model-selection patch does not apply cleanly." >&2
+  echo "Restore from backup if needed:" >&2
+  echo "  $BACKUP" >&2
+  exit 3
 fi
 
 cp "$ROOT/overlays/docker-compose.yml" docker-compose.yml
@@ -65,6 +87,11 @@ Preserved by design:
   data/
   logs/
   .git/
+
+Added in this update:
+  - selectable Director endpoint
+  - selectable Director model per mission
+  - selected endpoint/model passed to plan generation
 
 Backup:
   $BACKUP
