@@ -1,0 +1,182 @@
+services:
+  odysseus:
+    build: .
+    ports:
+    - ${APP_BIND:-0.0.0.0}:${APP_PORT:-7000}:7000
+    volumes:
+    - ${APP_DATA_DIR:-./data}:/app/data:z
+    - ${APP_LOGS_DIR:-./logs}:/app/logs:z
+    - ${APP_DATA_DIR:-./data}/ssh:/app/.ssh:z
+    - ${APP_DATA_DIR:-./data}/huggingface:/app/.cache/huggingface:z
+    - ${APP_DATA_DIR:-./data}/local:/app/.local:z
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    environment:
+      LLM_HOST: ${LLM_HOST:-host.docker.internal}
+      LLM_HOSTS: ${LLM_HOSTS:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:13305/api/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-lemonade-local}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      RESEARCH_LLM_ENDPOINT: ${RESEARCH_LLM_ENDPOINT:-http://host.docker.internal:13305/api/v1/chat/completions}
+      INTELLIGENCE_DIRECTOR_ENABLED: ${INTELLIGENCE_DIRECTOR_ENABLED:-true}
+      INTELLIGENCE_DIRECTOR_MODEL: ${INTELLIGENCE_DIRECTOR_MODEL:-}
+      INTELLIGENCE_DIRECTOR_ENDPOINT_ID: ${INTELLIGENCE_DIRECTOR_ENDPOINT_ID:-}
+      INTELLIGENCE_DIRECTOR_MAX_PARALLEL_TASKS: ${INTELLIGENCE_DIRECTOR_MAX_PARALLEL_TASKS:-4}
+      INTELLIGENCE_DIRECTOR_MAX_RETRIEVAL_CONCURRENCY: ${INTELLIGENCE_DIRECTOR_MAX_RETRIEVAL_CONCURRENCY:-2}
+      INTELLIGENCE_DIRECTOR_MAX_HEAVY_LLM_CONCURRENCY: ${INTELLIGENCE_DIRECTOR_MAX_HEAVY_LLM_CONCURRENCY:-1}
+      INTELLIGENCE_DIRECTOR_DEFAULT_DEPTH: ${INTELLIGENCE_DIRECTOR_DEFAULT_DEPTH:-deep}
+      INTELLIGENCE_DIRECTOR_MAX_SEARCH_WAVES: ${INTELLIGENCE_DIRECTOR_MAX_SEARCH_WAVES:-6}
+      INTELLIGENCE_DIRECTOR_MAX_QUERIES: ${INTELLIGENCE_DIRECTOR_MAX_QUERIES:-80}
+      INTELLIGENCE_DIRECTOR_MAX_CRAWLS: ${INTELLIGENCE_DIRECTOR_MAX_CRAWLS:-40}
+      INTELLIGENCE_DIRECTOR_DARKNET_AUTO_EXECUTE: ${INTELLIGENCE_DIRECTOR_DARKNET_AUTO_EXECUTE:-false}
+      INTELLIGENCE_DIRECTOR_DARKNET_REQUIRE_USER_APPROVAL: ${INTELLIGENCE_DIRECTOR_DARKNET_REQUIRE_USER_APPROVAL:-true}
+      DARKNET_SEARXNG_INSTANCE: ${DARKNET_SEARXNG_INSTANCE:-}
+      SEARXNG_INSTANCE: http://searxng:8080
+      CRAWL4AI_BASE_URL: ${CRAWL4AI_BASE_URL:-http://crawl4ai:11235}
+      WEB_SCRAPER_URL: ${WEB_SCRAPER_URL:-http://crawl4ai:11235}
+      CHROMADB_HOST: chromadb
+      CHROMADB_PORT: '8000'
+      EMBEDDING_URL: ${EMBEDDING_URL:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      FASTEMBED_MODEL: ${FASTEMBED_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+      FASTEMBED_CACHE_PATH: ${FASTEMBED_CACHE_PATH:-}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./data/app.db}
+      AUTH_ENABLED: ${AUTH_ENABLED:-true}
+      LOCALHOST_BYPASS: ${LOCALHOST_BYPASS:-false}
+      ODYSSEUS_ADMIN_USER: ${ODYSSEUS_ADMIN_USER:-admin}
+      ODYSSEUS_ADMIN_PASSWORD: ${ODYSSEUS_ADMIN_PASSWORD:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:7000,http://127.0.0.1:7000}
+      SECURE_COOKIES: ${SECURE_COOKIES:-false}
+      HF_TOKEN: ${HF_TOKEN:-}
+      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+      CLEANUP_INTERVAL_HOURS: ${CLEANUP_INTERVAL_HOURS:-24}
+      ODYSSEUS_INPROCESS_POLLERS: ${ODYSSEUS_INPROCESS_POLLERS:-1}
+      ODYSSEUS_INPROCESS_TASKS: ${ODYSSEUS_INPROCESS_TASKS:-1}
+      ODYSSEUS_SCRIPT_HOST: ${ODYSSEUS_SCRIPT_HOST:-localhost}
+      ODYSSEUS_CHAT_UPLOAD_MAX_BYTES: ${ODYSSEUS_CHAT_UPLOAD_MAX_BYTES:-10485760}
+      ODYSSEUS_GALLERY_UPLOAD_MAX_BYTES: ${ODYSSEUS_GALLERY_UPLOAD_MAX_BYTES:-104857600}
+      ODYSSEUS_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES: ${ODYSSEUS_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES:-26214400}
+      ODYSSEUS_MEMORY_IMPORT_MAX_BYTES: ${ODYSSEUS_MEMORY_IMPORT_MAX_BYTES:-10485760}
+      ODYSSEUS_PERSONAL_UPLOAD_MAX_BYTES: ${ODYSSEUS_PERSONAL_UPLOAD_MAX_BYTES:-26214400}
+      ODYSSEUS_EMAIL_COMPOSE_UPLOAD_MAX_BYTES: ${ODYSSEUS_EMAIL_COMPOSE_UPLOAD_MAX_BYTES:-26214400}
+      ODYSSEUS_STT_MAX_AUDIO_BYTES: ${ODYSSEUS_STT_MAX_AUDIO_BYTES:-26214400}
+      ODYSSEUS_ICS_MAX_BYTES: ${ODYSSEUS_ICS_MAX_BYTES:-10485760}
+      ODYSSEUS_TTS_CACHE_MAX_BYTES: ${ODYSSEUS_TTS_CACHE_MAX_BYTES:-524288000}
+      DATA_BRAVE_API_KEY: ${DATA_BRAVE_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GOOGLE_PSE_CX: ${GOOGLE_PSE_CX:-}
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI:-}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      SERPER_API_KEY: ${SERPER_API_KEY:-}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      OMP_NUM_THREADS: ${OMP_NUM_THREADS:-4}
+      OPENBLAS_NUM_THREADS: ${OPENBLAS_NUM_THREADS:-4}
+      MKL_NUM_THREADS: ${MKL_NUM_THREADS:-4}
+      NUMEXPR_NUM_THREADS: ${NUMEXPR_NUM_THREADS:-4}
+      MALLOC_ARENA_MAX: ${MALLOC_ARENA_MAX:-2}
+    depends_on:
+      searxng:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      crawl4ai:
+        condition: service_healthy
+    restart: unless-stopped
+    cpus: '3.5'
+    mem_limit: 2560m
+    mem_reservation: 1536m
+    pids_limit: 512
+  chromadb:
+    image: docker.io/chromadb/chroma:latest
+    ports:
+    - ${CHROMADB_BIND:-127.0.0.1}:8100:8000
+    volumes:
+    - chromadb-data:/chroma/chroma
+    environment:
+      ANONYMIZED_TELEMETRY: 'FALSE'
+    restart: unless-stopped
+    cpus: '1.5'
+    mem_limit: 1280m
+    mem_reservation: 512m
+    pids_limit: 256
+  searxng:
+    image: docker.io/searxng/searxng:2026.5.31-7159b8aed
+    entrypoint:
+    - /bin/sh
+    - -c
+    - "set -eu\nif [ ! -s /etc/searxng/settings.yml ] || grep -q 'odysseus-local-searxng-json-2026-05-30\\|__SEARXNG_SECRET__'\
+      \ /etc/searxng/settings.yml; then\n  secret=\"$${SEARXNG_SECRET:-}\"\n  if [ -z \"$$secret\" ]; then\n    secret=\"\
+      $$(python -c 'import secrets; print(secrets.token_urlsafe(48))')\"\n  fi\n  sed \"s|__SEARXNG_SECRET__|$$secret|g\"\
+      \ /tmp/searxng-settings.yml.template > /etc/searxng/settings.yml\nfi\nexec /usr/local/searxng/entrypoint.sh\n"
+    ports:
+    - 127.0.0.1:8080:8080
+    volumes:
+    - searxng-data:/etc/searxng
+    - ./config/searxng/settings.yml:/tmp/searxng-settings.yml.template:ro,z
+    environment:
+      SEARXNG_BASE_URL: http://localhost:8080/
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-}
+    cap_drop:
+    - ALL
+    cap_add:
+    - CHOWN
+    - SETGID
+    - SETUID
+    - DAC_OVERRIDE
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=5).read(1)"
+      interval: 5s
+      timeout: 6s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+    cpus: '1.25'
+    mem_limit: 640m
+    mem_reservation: 256m
+    pids_limit: 256
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    shm_size: 512mb
+    ports:
+    - ${CRAWL4AI_BIND:-127.0.0.1}:11235:11235
+    environment:
+      ENABLE_GPU: 'false'
+      MALLOC_ARENA_MAX: '2'
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import urllib.request; urllib.request.urlopen('http://localhost:11235/health', timeout=5).read(1)"
+      interval: 10s
+      timeout: 6s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+    cpus: '2.0'
+    mem_limit: 1536m
+    mem_reservation: 768m
+    pids_limit: 512
+  ntfy:
+    image: docker.io/binwiederhier/ntfy
+    command: serve
+    ports:
+    - ${NTFY_BIND:-127.0.0.1}:8091:80
+    volumes:
+    - ntfy-cache:/var/cache/ntfy
+    environment:
+      NTFY_BASE_URL: ${NTFY_BASE_URL:-http://localhost:8091}
+    restart: unless-stopped
+    cpus: '0.50'
+    mem_limit: 192m
+    mem_reservation: 64m
+    pids_limit: 128
+volumes:
+  searxng-data: null
+  chromadb-data: null
+  ntfy-cache: null
