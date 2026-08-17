@@ -54,7 +54,7 @@ Implemented now:
 - final synthesis;
 - explicit separate Darknet/Tor approval gate.
 
-Approved specifications/plans, included by the patch under `docs/superpowers/`:
+Approved specifications/plans:
 - Model Hub as standalone Odysseus program;
 - Hugging Face/GGUF/Safetensors import and conversion;
 - all quantizations with sizes and multi-variant installation;
@@ -62,6 +62,14 @@ Approved specifications/plans, included by the patch under `docs/superpowers/`:
 - dynamic resource-aware routing per task;
 - SPEED/QUALITY/BALANCED/LOW_MEMORY scheduler strategies;
 - persistent import/conversion/benchmark queues and recovery;
-- Deep Research methods `Classic`, `Intelligence Director`, and `Intelligence Director · Unfiltered`.
+- Deep Research methods `Classic`, `Intelligence Director`, and `Intelligence Director · Unfiltered`;
+- standalone **Brand Studio / Full White-Label** program;
+- custom logos, favicon, Light/Dark assets, login/report/e-mail branding and local fonts;
+- structured design tokens instead of arbitrary CSS/JS;
+- Draft → Validate → Preview → Publish with immutable published versions and rollback;
+- granular branding permissions and authenticated preview sessions;
+- global branding now with Domain/Organisation/Tenant-ready resolver architecture.
 
-Those Model Hub / Deep Research extensions are design-and-plan state until their implementation plans are executed. This channel does not pretend planned code already exists, because software has enough fictional status reporting without our assistance.
+The Brand Studio specification and its three TDD plans are stored in the checksum-protected bundle under `design/brand-studio/`.
+
+Model Hub, orchestrated Deep Research extensions, Unfiltered Research mode, and Brand Studio remain **design-and-plan state** until their implementation plans are executed. This channel does not pretend planned code already exists, because software has enough fictional status reporting without our assistance.
