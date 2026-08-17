@@ -6,7 +6,7 @@ This branch is a dedicated GitHub update channel for the webOwie/Odysseus Intell
 
 **Implemented:** the standalone Odysseus **Intelligence Director** program, including plan review, explicit execution approval, adaptive research waves, evidence/audit storage, specialist worker routing, final synthesis, and the separate Darknet/Tor approval gate.
 
-**Specified/planned, not falsely advertised as already implemented:** the standalone **Model Hub**, dynamic resource-aware model routing, Hugging Face/GGUF/Safetensors import and conversion, benchmarks, orchestrator profiles, and the two Director methods inside Deep Research including Unfiltered Research mode.
+**Specified/planned, not falsely advertised as already implemented:** the standalone **Model Hub**, dynamic resource-aware model routing, Hugging Face/GGUF/Safetensors import and conversion, benchmarks, orchestrator profiles, the two Director methods inside Deep Research including Unfiltered Research mode, and the standalone **Brand Studio / Full White-Label** subsystem with versioned publishing, secure asset processing, custom logos/favicon/fonts/themes, granular permissions, authenticated draft previews, rollback, and multi-brand-ready resolution.
 
 See `VERSION` and `channel.json` for the exact state.
 
@@ -53,14 +53,26 @@ The updater verifies the patch checksum, creates a timestamped source backup fir
 - `update-existing.sh` — updater for an existing local Odysseus source tree
 - `SHA256SUMS` — integrity hashes
 - `VERSION` / `channel.json` — machine-readable update-channel state
-- `DESIGN-AND-PLANS.md.gz.b64` — compressed bundle containing all approved design specifications and implementation plans
+- `DESIGN-AND-PLANS.md.gz.b64` — compressed bundle containing the previously approved Intelligence Director / Model Hub / orchestrated Deep Research design specifications and implementation plans
+- `design/brand-studio/` — chunked, checksum-protected bundle containing the approved Brand Studio / Full White-Label design specification and its three TDD implementation plans
 
-To extract the complete design/plan bundle:
+To extract the existing general design/plan bundle:
 
 ```bash
 base64 -d DESIGN-AND-PLANS.md.gz.b64 | gzip -dc > DESIGN-AND-PLANS.md
 ```
 
+To verify and reconstruct the Brand Studio bundle:
+
+```bash
+cd design/brand-studio
+sha256sum -c SHA256SUMS
+cat BRAND-STUDIO-DESIGN-AND-PLANS.part-* \
+  | base64 -d \
+  | gzip -dc \
+  > BRAND-STUDIO-DESIGN-AND-PLANS.md
+```
+
 ## Development model
 
-This update channel is intentionally separate from the repository's normal `main` branch. Future implementation work for Model Hub and orchestrated Deep Research can be published to this same branch, so local installations have one stable update source instead of a growing pile of mystery patches.
+This update channel is intentionally separate from the repository's normal `main` branch. Future implementation work for Model Hub, orchestrated Deep Research, and Brand Studio can be published to this same branch, so local installations have one stable update source instead of a growing pile of mystery patches.
