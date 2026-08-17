@@ -1,10 +1,10 @@
 {
   "channel": "odysseus-intelligence-suite",
-  "version": "2026-08-17.1",
+  "version": "2026-08-17.2",
   "upstream_repository": "https://github.com/odysseus-dev/odysseus.git",
   "upstream_commit": "25c9e735ef5ce605f47f8f666ac6689056d2c10c",
   "feature_source_commit": "787162ba1493176417148d0974945a8e674cd437",
   "patch_sha256": "3cbfbad9760d64662c837fe6bad67b79f3261d9ed296c41eb218a73e5f48b129",
   "implemented": ["standalone-intelligence-director"],
-  "planned": ["model-hub", "orchestrated-deep-research", "unfiltered-research-mode"]
+  "planned": ["model-hub", "orchestrated-deep-research", "unfiltered-research-mode", "brand-studio-white-label"]
 }
