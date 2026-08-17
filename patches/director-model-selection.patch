@@ -1,0 +1,190 @@
+--- a/src/research/director/models.py
++++ b/src/research/director/models.py
+@@ -43,6 +43,8 @@
+     depth: Literal["quick", "standard", "deep", "exhaustive"] = "deep"
+     domains: list[str] = Field(default_factory=lambda: ["osint", "socmint"])
+     resource_profile: Literal["conservative", "balanced", "maximum"] = "balanced"
++    director_endpoint_id: str | None = None
++    director_model: str | None = None
+ 
+     @field_validator("objective")
+     @classmethod
+--- a/routes/intelligence_director_routes.py
++++ b/routes/intelligence_director_routes.py
+@@ -69,6 +69,24 @@
+     return q.order_by(ModelEndpoint.owner.desc()).all()
+ 
+ 
++def _director_model_options(db, owner: str) -> list[dict[str, object]]:
++    options: list[dict[str, object]] = []
++    for endpoint in _visible_endpoints(db, owner):
++        models = [
++            model_id.strip()
++            for model_id in _endpoint_enabled_models(endpoint)
++            if isinstance(model_id, str) and model_id.strip()
++        ]
++        if not models:
++            continue
++        options.append({
++            'endpoint_id': endpoint.id,
++            'endpoint_name': endpoint.name or endpoint.id,
++            'models': models,
++        })
++    return options
++
++
+ def _discover_capabilities(db, owner: str) -> DirectorCapabilities:
+     model_ids: list[str] = []
+     for endpoint in _visible_endpoints(db, owner):
+@@ -163,6 +181,7 @@
+                 'enabled': cfg.enabled,
+                 'endpoint_id': endpoint_id,
+                 'model': model,
++                'model_options': _director_model_options(db, owner),
+                 'limits': _limits_from_config(cfg).model_dump(),
+                 'capabilities': {
+                     'tools': sorted(caps.tools),
+@@ -191,8 +210,8 @@
+                 endpoint_id, model = discover_director_selection(
+                     db,
+                     owner=owner,
+-                    configured_endpoint_id=cfg.endpoint_id,
+-                    configured_model=cfg.model,
++                    configured_endpoint_id=body.director_endpoint_id or cfg.endpoint_id,
++                    configured_model=body.director_model or cfg.model,
+                 )
+             except DirectorPlannerError as exc:
+                 raise HTTPException(503, str(exc)) from exc
+--- a/static/js/intelligenceDirector.js
++++ b/static/js/intelligenceDirector.js
+@@ -5,6 +5,7 @@
+ let _open = false;
+ let _keydown = null;
+ let _events = null;
++let _modelOptions = [];
+ let _state = { ...initialDirectorState };
+ 
+ const OVERLAY_ID = 'intelligence-director-overlay';
+@@ -62,6 +63,14 @@
+               </select>
+             </label>
+           </div>
++          <div class="intelligence-director-grid-2">
++            <label class="intelligence-director-field">Director endpoint
++              <select id="intelligence-director-endpoint"><option value="">Detecting…</option></select>
++            </label>
++            <label class="intelligence-director-field">Director model
++              <select id="intelligence-director-model-select"><option value="">Detecting…</option></select>
++            </label>
++          </div>
+           <div class="intelligence-director-label">Intelligence domains</div>
+           <div class="intelligence-director-domain-grid">
+             ${['osint','socmint','corporate','technical','news','archive','visual'].map((d, i) => `<label><input type="checkbox" data-director-domain="${d}" ${i < 2 ? 'checked' : ''}> ${d.toUpperCase()}</label>`).join('')}
+@@ -199,14 +208,53 @@
+   return body;
+ }
+ 
++function _syncDirectorModelSelect(preferredModel = '') {
++  const endpointSelect = document.getElementById('intelligence-director-endpoint');
++  const modelSelect = document.getElementById('intelligence-director-model-select');
++  const summary = document.getElementById('intelligence-director-model');
++  if (!endpointSelect || !modelSelect) return;
++
++  const entry = _modelOptions.find(item => item.endpoint_id === endpointSelect.value);
++  const models = entry?.models || [];
++  modelSelect.innerHTML = models.length
++    ? models.map(model => `<option value="${_escape(model)}">${_escape(model)}</option>`).join('')
++    : '<option value="">No models available</option>';
++
++  if (preferredModel && models.includes(preferredModel)) modelSelect.value = preferredModel;
++  if (summary) {
++    const endpointName = entry?.endpoint_name || endpointSelect.value || 'endpoint unavailable';
++    summary.textContent = modelSelect.value ? `${modelSelect.value} · ${endpointName}` : 'Director model unavailable';
++  }
++}
++
+ async function _loadConfig() {
+   try {
+     const cfg = await _request('/config');
+-    const model = document.getElementById('intelligence-director-model');
+-    if (model) model.textContent = cfg.model || 'Director model unavailable';
++    _modelOptions = Array.isArray(cfg.model_options) ? cfg.model_options : [];
++    const endpointSelect = document.getElementById('intelligence-director-endpoint');
++    const modelSelect = document.getElementById('intelligence-director-model-select');
++    const summary = document.getElementById('intelligence-director-model');
++    if (!endpointSelect || !modelSelect) return;
++
++    endpointSelect.innerHTML = _modelOptions.length
++      ? _modelOptions.map(item => `<option value="${_escape(item.endpoint_id)}">${_escape(item.endpoint_name || item.endpoint_id)}</option>`).join('')
++      : '<option value="">No enabled endpoints</option>';
++
++    if (cfg.endpoint_id && _modelOptions.some(item => item.endpoint_id === cfg.endpoint_id)) {
++      endpointSelect.value = cfg.endpoint_id;
++    }
++    _syncDirectorModelSelect(cfg.model || '');
++
++    endpointSelect.addEventListener('change', () => _syncDirectorModelSelect());
++    modelSelect.addEventListener('change', () => {
++      const entry = _modelOptions.find(item => item.endpoint_id === endpointSelect.value);
++      if (summary) summary.textContent = modelSelect.value
++        ? `${modelSelect.value} · ${entry?.endpoint_name || endpointSelect.value}`
++        : 'Director model unavailable';
++    });
+   } catch (error) {
+-    const model = document.getElementById('intelligence-director-model');
+-    if (model) model.textContent = error.message;
++    const summary = document.getElementById('intelligence-director-model');
++    if (summary) summary.textContent = error.message;
+   }
+ }
+ 
+@@ -225,6 +273,8 @@
+         depth: document.getElementById('intelligence-director-depth')?.value || 'deep',
+         domains: domains.length ? domains : ['osint', 'socmint'],
+         resource_profile: 'balanced',
++        director_endpoint_id: document.getElementById('intelligence-director-endpoint')?.value || null,
++        director_model: document.getElementById('intelligence-director-model-select')?.value || null,
+       }),
+     });
+     _dispatch({ type: 'PLAN_READY', missionId: body.mission_id, planVersion: body.plan_version, plan: body.plan, director: body.director });
+--- /dev/null
++++ b/tests/test_director_model_selection_feature.py
+@@ -0,0 +1,38 @@
++from pathlib import Path
++import sys
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++sys.path.insert(0, str(ROOT))
++
++
++def _models_module():
++    from src.research.director import models
++    return models
++
++
++def test_mission_input_accepts_per_mission_director_selection():
++    models = _models_module()
++    mission = models.MissionInput(
++        objective='Map Example GmbH',
++        director_endpoint_id='ep2',
++        director_model='Qwen3.5-4B',
++    )
++    assert mission.director_endpoint_id == 'ep2'
++    assert mission.director_model == 'Qwen3.5-4B'
++
++
++def test_route_uses_requested_selection_before_config_fallback():
++    text = (ROOT / 'routes' / 'intelligence_director_routes.py').read_text(encoding='utf-8')
++    assert 'configured_endpoint_id=body.director_endpoint_id or cfg.endpoint_id' in text
++    assert 'configured_model=body.director_model or cfg.model' in text
++    assert "'model_options': _director_model_options(db, owner)" in text
++
++
++def test_frontend_renders_and_submits_director_model_selection():
++    text = (ROOT / 'static' / 'js' / 'intelligenceDirector.js').read_text(encoding='utf-8')
++    assert 'id="intelligence-director-endpoint"' in text
++    assert 'id="intelligence-director-model-select"' in text
++    assert 'director_endpoint_id:' in text
++    assert 'director_model:' in text
