@@ -1,0 +1,8 @@
+CHANNEL_VERSION=2026-08-17.1
+CHANNEL_BRANCH=odysseus-intelligence-suite
+UPSTREAM_REPOSITORY=https://github.com/odysseus-dev/odysseus.git
+UPSTREAM_COMMIT=25c9e735ef5ce605f47f8f666ac6689056d2c10c
+FEATURE_SOURCE_COMMIT=787162ba1493176417148d0974945a8e674cd437
+PATCH_SHA256=3cbfbad9760d64662c837fe6bad67b79f3261d9ed296c41eb218a73e5f48b129
+IMPLEMENTED=standalone-intelligence-director
+PLANNED=model-hub,orchestrated-deep-research,unfiltered-research-mode
