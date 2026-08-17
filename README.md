@@ -8,7 +8,7 @@ This branch is a dedicated GitHub update channel for the webOwie/Odysseus Intell
 
 **Specified/planned, not falsely advertised as already implemented:** the standalone **Model Hub**, dynamic resource-aware model routing, Hugging Face/GGUF/Safetensors import and conversion, benchmarks, orchestrator profiles, and the two Director methods inside Deep Research including Unfiltered Research mode.
 
-See `VERSION` and `docs/` for the exact state.
+See `VERSION` and `channel.json` for the exact state.
 
 ## Fresh clone / installation
 
@@ -18,7 +18,7 @@ git clone --branch odysseus-intelligence-suite --single-branch \
   odysseus-intelligence-channel
 
 cd odysseus-intelligence-channel
-./bootstrap-fresh.sh ~/odysseus-intelligence-suite
+bash bootstrap-fresh.sh ~/odysseus-intelligence-suite
 ```
 
 The bootstrap script clones the official Odysseus repository and pins it to the verified base commit `25c9e735ef5ce605f47f8f666ac6689056d2c10c`, applies the webOwie Intelligence Suite patch, and installs the CPU/Lemonade compose overlays.
@@ -31,7 +31,7 @@ git clone --branch odysseus-intelligence-suite --single-branch \
   ~/odysseus-intelligence-channel
 
 cd ~/odysseus-intelligence-channel
-./update-existing.sh ~/odysseus
+bash update-existing.sh ~/odysseus
 ```
 
 For later channel updates:
@@ -39,7 +39,7 @@ For later channel updates:
 ```bash
 cd ~/odysseus-intelligence-channel
 git pull
-./update-existing.sh ~/odysseus
+bash update-existing.sh ~/odysseus
 ```
 
 The updater verifies the patch checksum, creates a timestamped source backup first, and does not copy `.env`, `data/`, `logs/`, or Git metadata from the channel.
@@ -53,7 +53,13 @@ The updater verifies the patch checksum, creates a timestamped source backup fir
 - `update-existing.sh` — updater for an existing local Odysseus source tree
 - `SHA256SUMS` — integrity hashes
 - `VERSION` / `channel.json` — machine-readable update-channel state
-- `DESIGN-AND-PLANS.md` — approved designs and implementation plans
+- `DESIGN-AND-PLANS.md.gz.b64` — compressed bundle containing all approved design specifications and implementation plans
+
+To extract the complete design/plan bundle:
+
+```bash
+base64 -d DESIGN-AND-PLANS.md.gz.b64 | gzip -dc > DESIGN-AND-PLANS.md
+```
 
 ## Development model
 
