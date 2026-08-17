@@ -7,7 +7,7 @@ git clone --branch odysseus-intelligence-suite --single-branch \
   https://github.com/puchadave/webOwie-Lokal.-Intelligent.-Dominanz..git \
   odysseus-intelligence-channel
 cd odysseus-intelligence-channel
-./bootstrap-fresh.sh ~/odysseus-intelligence-suite
+bash bootstrap-fresh.sh ~/odysseus-intelligence-suite
 ```
 
 ## Existing local installation
@@ -15,7 +15,7 @@ cd odysseus-intelligence-channel
 ```bash
 cd ~/odysseus-intelligence-channel
 git pull
-./update-existing.sh ~/odysseus
+bash update-existing.sh ~/odysseus
 ```
 
 Then rebuild:
