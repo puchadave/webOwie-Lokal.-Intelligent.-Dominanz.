@@ -1,76 +1,60 @@
-<a href="https://puchalla.pro"><img width="1024" height="1024" alt="puchalla.pro | Systeme. Strategien. Kontrolle." src="https://github.com/user-attachments/assets/3da3e852-6b54-4688-8324-c6b5e12505ab" /></a>
+# Odysseus Intelligence Suite · webOwie update channel
 
-# OSINT Marketing Tool
+This branch is a dedicated GitHub update channel for the webOwie/Odysseus Intelligence Suite.
 
-## Installation
+## What this revision contains
 
-1. **Clone the repository:**
-   ```sh
-   git clone <repo-url>
-   cd osint_marketing_tool
-   ```
+**Implemented:** the standalone Odysseus **Intelligence Director** program, including plan review, explicit execution approval, adaptive research waves, evidence/audit storage, specialist worker routing, final synthesis, and the separate Darknet/Tor approval gate.
 
-2. **Create and activate a Python virtual environment (recommended):**
-   ```sh
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+**Specified/planned, not falsely advertised as already implemented:** the standalone **Model Hub**, dynamic resource-aware model routing, Hugging Face/GGUF/Safetensors import and conversion, benchmarks, orchestrator profiles, and the two Director methods inside Deep Research including Unfiltered Research mode.
 
-3. **Install dependencies:**
-   ```sh
-   pip install -r requirements.txt
-   ```
+See `VERSION` and `docs/` for the exact state.
 
-4. **Copy and configure environment variables:**
-   ```sh
-   cp config.example.env .env
-   # Edit .env to set your API keys, database URL, and other secrets
-   ```
+## Fresh clone / installation
 
-5. **Set up the PostgreSQL database:**
-   - Ensure PostgreSQL is running and create a database (e.g., `osint_db`).
-   - Update `DATABASE_URL` in `.env` (e.g., `postgresql://user:password@localhost:5432/osint_db`).
+```bash
+git clone --branch odysseus-intelligence-suite --single-branch \
+  https://github.com/puchadave/webOwie-Lokal.-Intelligent.-Dominanz..git \
+  odysseus-intelligence-channel
 
-6. **Initialize the database:**
-   ```sh
-   python app.py  # The app will create tables on first run
-   ```
+cd odysseus-intelligence-channel
+./bootstrap-fresh.sh ~/odysseus-intelligence-suite
+```
 
-7. **Start the Flask server:**
-   ```sh
-   python app.py
-   # Or use the VS Code task: Start Flask Debug Server
-   ```
+The bootstrap script clones the official Odysseus repository and pins it to the verified base commit `25c9e735ef5ce605f47f8f666ac6689056d2c10c`, applies the webOwie Intelligence Suite patch, and installs the CPU/Lemonade compose overlays.
 
+## Update an existing `~/odysseus`
 
+```bash
+git clone --branch odysseus-intelligence-suite --single-branch \
+  https://github.com/puchadave/webOwie-Lokal.-Intelligent.-Dominanz..git \
+  ~/odysseus-intelligence-channel
 
-## Usage
+cd ~/odysseus-intelligence-channel
+./update-existing.sh ~/odysseus
+```
 
-- **Access the main dashboard:**
-  - Open [http://localhost:5000/dashboard](http://localhost:5000/dashboard) in your browser.
+For later channel updates:
 
-- **Specialized dashboards:**
-  - Social Media Manager: [http://localhost:5000/dashboard/social](http://localhost:5000/dashboard/social)
-  - SEO/SEA: [http://localhost:5000/dashboard/sem](http://localhost:5000/dashboard/sem)
-  - OSINT Market Analysis: [http://localhost:5000/dashboard/osint](http://localhost:5000/dashboard/osint)
-  - System Architect: [http://localhost:5000/dashboard/arch](http://localhost:5000/dashboard/arch)
-  - Cybersecurity: [http://localhost:5000/dashboard/cyber](http://localhost:5000/dashboard/cyber)
+```bash
+cd ~/odysseus-intelligence-channel
+git pull
+./update-existing.sh ~/odysseus
+```
 
-- **Manual backup:**
-  - Run `python backup.py` for a manual backup
-  - Run `python backup_ai.py` for AI-driven backup and monitoring
+The updater verifies the patch checksum, creates a timestamped source backup first, and does not copy `.env`, `data/`, `logs/`, or Git metadata from the channel.
 
-- **Tenant and business modules:**
-  - Access CRM, accounting, ecommerce, and other modules via their respective routes or dashboards.
+## Files
 
-- **Configuration:**
-  - Edit `.env` for API keys, database, and service credentials.
+- `odysseus-intelligence-suite.patch.gz.b64` — compressed reproducible feature patch against the verified Odysseus base
+- `overlays/docker-compose.yml` — webOwie CPU/Lemonade/Crawl4AI-aware compose configuration
+- `overlays/docker-compose.5600G-CPU-optimized.yml` — Ryzen 5 5600G CPU-oriented compose profile
+- `bootstrap-fresh.sh` — reproducible fresh checkout builder
+- `update-existing.sh` — updater for an existing local Odysseus source tree
+- `SHA256SUMS` — integrity hashes
+- `VERSION` / `channel.json` — machine-readable update-channel state
+- `DESIGN-AND-PLANS.md` — approved designs and implementation plans
 
-- **Extending:**
-  - Add new connectors in `connectors/`, business logic in domain files, and templates in `templates/`.
+## Development model
 
-
-## Notes
-- Requires Python 3.8+
-- Requires PostgreSQL for database storage
-- For production, configure environment variables securely and use a production-ready WSGI server (e.g., gunicorn)
+This update channel is intentionally separate from the repository's normal `main` branch. Future implementation work for Model Hub and orchestrated Deep Research can be published to this same branch, so local installations have one stable update source instead of a growing pile of mystery patches.
